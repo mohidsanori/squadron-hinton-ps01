@@ -1,7 +1,7 @@
 # 02 — Socratic Protocol Map
 
 **Station:** protocol — Protocol & Interface Specialist
-**Officer:** _TBD_
+**Officer:** Sharjeel
 **Status:** draft
 
 > Brief: reverse-engineer the Socratic elenchus into a formal state machine and pseudocode: input claim P₀, probing questions, counter-examples, contradiction detection, refinement loop Pₖ₊₁, and stopping criteria (Refined Definition vs Aporia).

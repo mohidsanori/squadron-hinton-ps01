@@ -1,7 +1,7 @@
 # 03 — Galilean Ethics Sandbox
 
 **Station:** security — Security & Ethical Navigator
-**Officer:** _TBD_
+**Officer:** Ahmed
 **Status:** draft
 
 > Brief: cast three personas (Advocate *Salviati*, Skeptic *Simplicio*, Mediator *Sagredo*), design an AI-ethics thought experiment that tests boundary conditions, and audit how multi-agent debate mitigates single-agent sycophancy or bias.

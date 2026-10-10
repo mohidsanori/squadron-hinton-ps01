@@ -12,14 +12,13 @@ AURA's conversational matrix is offline. This repository rebuilds her two founda
 
 ## Squad roster
 
-Members: Mohid, Ahmed, Shayan, Sharjeel. Ahmed, Shayan and Sharjeel each take one of the `data`, `protocol`, `security` stations and put their name in the table.
-
+Members: Mohid, Shayan, Sharjeel, Ahmed.
 
 | Station | Role | Officer | Deliverable |
 |---|---|---|---|
-| data | Knowledge & Memory Archivist | _TBD_ | [`01_Alignment_Brief.md`](01_Alignment_Brief.md) |
-| protocol | Protocol & Interface Specialist | _TBD_ | [`02_Socratic_Protocol_Map.md`](02_Socratic_Protocol_Map.md) |
-| security | Security & Ethical Navigator | _TBD_ | [`03_Galilean_Sandbox.md`](03_Galilean_Sandbox.md) |
+| data | Knowledge & Memory Archivist | Shayan | [`01_Alignment_Brief.md`](01_Alignment_Brief.md) |
+| protocol | Protocol & Interface Specialist | Sharjeel | [`02_Socratic_Protocol_Map.md`](02_Socratic_Protocol_Map.md) |
+| security | Security & Ethical Navigator | Ahmed | [`03_Galilean_Sandbox.md`](03_Galilean_Sandbox.md) |
 | architect | Core & Lead Architect | Mohid | [`04_dialogic_engine.py`](04_dialogic_engine.py), [`05_Execution_Transcript.txt`](05_Execution_Transcript.txt) |
 
 ## Repository layout
@@ -71,6 +70,6 @@ python 04_dialogic_engine.py --baseline --transcript 05_Execution_Transcript.txt
 Each officer ticks their own box once they have read every deliverable and agree the squad's submission is ready.
 
 - [ ] **architect** — Core & Lead Architect — Mohid, _date_
-- [ ] **protocol** — Protocol & Interface Specialist — _name, date_
-- [ ] **data** — Knowledge & Memory Archivist — _name, date_
-- [ ] **security** — Security & Ethical Navigator — _name, date_
+- [ ] **protocol** — Protocol & Interface Specialist — Sharjeel, _date_
+- [ ] **data** — Knowledge & Memory Archivist — Shayan, _date_
+- [ ] **security** — Security & Ethical Navigator — Ahmed, _date_

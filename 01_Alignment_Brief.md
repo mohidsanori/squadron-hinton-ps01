@@ -1,7 +1,7 @@
 # 01 — Dialogic Alignment Brief
 
 **Station:** data — Knowledge & Memory Archivist
-**Officer:** _TBD_
+**Officer:** Shayan
 **Status:** draft
 
 > Brief: analyse Plato's *Euthyphro* and Galileo's *Dialogue Concerning the Two Chief World Systems*. Compare dialogue as Discovery (Socratic) vs Persuasion (Galilean), evaluate how modern LLMs behave under Socratic probing, and define AURA's grounding system prompt. About one page.
