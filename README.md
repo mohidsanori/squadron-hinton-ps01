@@ -71,7 +71,7 @@ python 04_dialogic_engine.py --provider claude-code --baseline --transcript 05_E
 
 Each officer ticks their own box once they have read every deliverable and agree the squad's submission is ready.
 
-- [ ] **architect** — Core & Lead Architect — Mohid, _date_
-- [ ] **protocol** — Protocol & Interface Specialist — Sharjeel, _date_
-- [ ] **data** — Knowledge & Memory Archivist — Shayan, _date_
-- [ ] **security** — Security & Ethical Navigator — Ahmed, _date_
+- [x] **architect** — Core & Lead Architect — Mohid, 2026-10-12
+- [x] **protocol** — Protocol & Interface Specialist — Sharjeel, 2026-10-12
+- [x] **data** — Knowledge & Memory Archivist — Shayan, 2026-10-12
+- [x] **security** — Security & Ethical Navigator — Ahmed, 2026-10-12
