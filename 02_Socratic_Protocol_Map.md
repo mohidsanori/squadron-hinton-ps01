@@ -2,7 +2,6 @@
 
 **Squadron Hinton · Conversational AI · WiSe 26/27 · Mission 01**
 **Role:** Protocol & Interface Specialist (Sharjeel)
-**Consumed by:** Lead Architect (Mohid) → `04_dialogic_engine.py`
 
 ---
 
@@ -263,7 +262,7 @@ In Socratic terms, aporia is not a failure state. It is a valid result: *"We now
 
 ---
 
-## 9. Hand-off Notes for the Lead Architect (Mohid)
+## 9. Hand-off Notes
 
 **Suggested Python skeleton**
 
@@ -298,15 +297,8 @@ def socratic_elenchus(p0, llm, max_rounds=6, survival_target=2,
 | `refine(claim, cx, reason)` | REFINE | One new claim, one sentence |
 | `summarise(...)` / `aporia_summary(...)` | terminal states | 3–5 sentence wrap-up |
 
-**Implementation tips**
-- Plug in Shayan's Socratic system prompt (`01_Alignment_Brief.md`) for the Socrates voice in `ask_probes`, `generate_counterexample`, and the summaries.
-- Strip markdown fences and `json.loads()` the EVALUATE output; if parsing fails, retry once, then treat as `contradiction: false`.
-- Print each trace entry as `[Step 07 | EVALUATE | P1] …` so the transcript clearly shows state transitions.
-- Implement `is_circular` simply: ask the LLM "Is claim B equivalent to any claim in this list? yes/no", or compare normalised strings as a fallback.
-- Keep `MAX_ROUNDS` small (≤ 6) to limit API cost and keep the transcript readable.
+
 
 ---
 
-## 10. Sign-off
 
-- [ ] **Protocol Specialist (Sharjeel):** State-machine logic and schema formats verified.
