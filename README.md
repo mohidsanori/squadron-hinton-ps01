@@ -52,7 +52,7 @@ The engine picks the first provider whose key is set (Claude, then OpenAI, then 
 | `--mode` | `both` | `socratic`, `galilean` or `both` |
 | `--claim` | "An AI agent is benevolent if it obeys orders." | Socratic P₀ |
 | `--topic` | "Should frontier AI models be open-sourced?" | Galilean proposition |
-| `--max-refinements` | 4 | refinements before forced aporia |
+| `--max-rounds` | 4 | refinement rounds before forced aporia (`MAX_ROUNDS` in `02`; `--max-refinements` still works) |
 | `--rounds` | 2 | Galilean challenge rounds |
 | `--baseline` | off | single-agent leading-question run, for the sycophancy comparison |
 | `--transcript FILE` | none | save the console log |

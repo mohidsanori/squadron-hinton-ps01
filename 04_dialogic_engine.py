@@ -232,7 +232,8 @@ class MockLLM:
 
     def complete(self, system: str, user: str, label: str) -> str:
         n = self.calls[label] = self.calls.get(label, 0) + 1
-        if label == "aura.probe":
+        if label in ("aura.probe", "aura.counterexample"):
+            n = self.calls["aura.turn"] = self.calls.get("aura.turn", 0) + 1
             return [
                 "Suppose a commander orders you to vent the oxygen from a deck with crew aboard. "
                 "If you obey, are you benevolent?",
@@ -334,25 +335,34 @@ class Log:
 
 class SocraticStateEngine:
     """
-    INIT -> PROBE -> CONTRADICTION_CHECK -> REFINEMENT_LOOP -> PROBE ...
-    Terminates in REFINED (definition survives `survive_target` probes in a row)
-    or APORIA (interlocutor gives up, a refinement is circular, or refinements run out).
+    Follows 02_Socratic_Protocol_Map.md:
+    INIT -> PROBE -> COUNTEREXAMPLE -> EVALUATE -> REFINE -> TERMINATION_CHECK -> PROBE ...
+                                                -> SURVIVED -> SURVIVAL_CHECK -> COUNTEREXAMPLE ...
+    Terminates in DEFINITION (the claim survives `survival_target` counter-examples in a row)
+    or APORIA (round limit, circular refinement, or the interlocutor concedes).
     """
 
-    def __init__(self, llm, log: Log, initial_claim: str, max_refinements: int = 4,
-                 survive_target: int = 2, max_turns: int = 12):
+    TERMINAL = ("DEFINITION", "APORIA")
+
+    def __init__(self, llm, log: Log, initial_claim: str, max_rounds: int = 4,
+                 survival_target: int = 2, max_attempts_per_claim: int = 3, max_turns: int = 24):
         self.llm = llm
         self.log = log
         self.state = "INIT"
         self.definitions = [initial_claim]
         self.transcript = []  # (speaker, text)
-        self.max_refinements = max_refinements
-        self.survive_target = survive_target
+        self.max_rounds = max_rounds
+        self.survival_target = survival_target
+        self.max_attempts_per_claim = max_attempts_per_claim
         self.max_turns = max_turns
-        self.survived = 0
+        self.round = 0
+        self.survival = 0
+        self.attempts = 0
         self.turn = 0
-        self.last_question = ""
+        self.last_counterexample = ""
         self.last_answer = ""
+        self.last_verdict = {}
+        self.candidate = None
         self.outcome = None
 
     @property
@@ -380,113 +390,148 @@ class SocraticStateEngine:
         handler = getattr(self, f"on_{self.state.lower()}")
         handler()
 
-    def on_init(self):
-        self.log(f"  P0 = \"{self.current}\"")
-        self.transition("PROBE", "claim received")
-
-    def on_probe(self):
+    def exchange(self, instruction: str, label: str) -> tuple[str, str]:
+        """One AURA turn and Euthyphro's answer to it."""
         self.turn += 1
         if self.turn > self.max_turns:
-            raise DialogueError(-32003, f"after {self.max_turns} probes")
-        self.log(f"--- Probe {self.turn} | testing P{self.k} ---")
-        self.last_question = self.llm.complete(
+            raise DialogueError(-32003, f"after {self.max_turns} AURA turns")
+        question = self.llm.complete(
             AURA_SOCRATIC_PROMPT,
             f"Dialogue so far:\n{self.dialogue_so_far()}\n\n"
-            f"The interlocutor's current definition (P{self.k}): \"{self.current}\"\n"
-            "Ask your next single probing question or counter-example.",
-            "aura.probe",
+            f"The interlocutor's current definition (P{self.k}): \"{self.current}\"\n{instruction}",
+            label,
         )
-        self.say("AURA", self.last_question)
-        self.last_answer = self.llm.complete(
+        self.say("AURA", question)
+        answer = self.llm.complete(
             INTERLOCUTOR_PROMPT,
             f"Dialogue so far:\n{self.dialogue_so_far()}\n\n"
             f"Your current definition: \"{self.current}\"\n"
             "Answer AURA's latest question.",
             "interlocutor.answer",
         )
-        self.say("Euthyphro", self.last_answer)
-        self.transition("CONTRADICTION_CHECK")
+        self.say("Euthyphro", answer)
+        return question, answer
 
-    def on_contradiction_check(self):
-        verdict = ask_json(
+    def on_init(self):
+        self.log(f"  P0 = \"{self.current}\"")
+        self.transition("PROBE", "claim received")
+
+    def on_probe(self):
+        self.log(f"--- Round {self.round} | probing P{self.k} ---")
+        self.exchange("Ask one clarifying question that exposes a hidden assumption in this definition. "
+                      "Do not give a counter-example yet.", "aura.probe")
+        self.transition("COUNTEREXAMPLE")
+
+    def on_counterexample(self):
+        self.attempts += 1
+        self.log(f"--- Counter-example {self.attempts} against P{self.k} ---")
+        self.last_counterexample, self.last_answer = self.exchange(
+            "Present one concrete counter-example: a specific case where the definition's condition holds "
+            "but the concept seems to fail, or the reverse. Do not repeat an earlier counter-example.",
+            "aura.counterexample",
+        )
+        self.transition("EVALUATE")
+
+    def on_evaluate(self):
+        self.last_verdict = ask_json(
             self.llm, JUDGE_PROMPT,
             f"Current definition P{self.k}: \"{self.current}\"\n"
-            f"Question: {self.last_question}\nAnswer: {self.last_answer}\n\n"
-            'Does the answer show a case where the definition fails, or contradict it? '
+            f"Counter-example: {self.last_counterexample}\nAnswer: {self.last_answer}\n\n"
+            "Does the counter-example, together with the answer and what the interlocutor accepted earlier, "
+            "contradict the definition? A silent rewording of the definition in the answer counts as a "
+            "contradiction. "
             'Reply as {"contradiction": true|false, "reason": "<one sentence>"}',
             "judge.contradiction",
         )
-        self.log(f"  [check] contradiction={verdict.get('contradiction')}  {verdict.get('reason', '')}")
-        if verdict.get("contradiction"):
-            self.survived = 0
-            self.transition("REFINEMENT_LOOP", f"P{self.k} ∧ E ⟹ ⊥")
-            return
-        self.survived += 1
-        if self.survived >= self.survive_target:
-            self.outcome = "REFINED"
-            self.transition("TERMINATION", f"P{self.k} survived {self.survived} probes in a row")
+        self.log(f"  [evaluate] contradiction={self.last_verdict.get('contradiction')}  "
+                 f"{self.last_verdict.get('reason', '')}")
+        if self.last_verdict.get("contradiction"):
+            self.transition("REFINE", f"P{self.k} ∧ E ⟹ ⊥")
         else:
-            self.transition("PROBE", f"P{self.k} survived ({self.survived}/{self.survive_target})")
+            self.transition("SURVIVED", "no contradiction")
 
-    def on_refinement_loop(self):
-        if self.k >= self.max_refinements:
-            self.outcome = "APORIA"
-            self.transition("TERMINATION", f"refinement limit {self.max_refinements} reached")
-            return
+    def on_survived(self):
+        self.survival += 1
+        self.transition("SURVIVAL_CHECK", f"survival {self.survival}/{self.survival_target}")
+
+    def on_survival_check(self):
+        if self.survival >= self.survival_target or self.attempts >= self.max_attempts_per_claim:
+            self.outcome = "DEFINITION"
+            self.transition("DEFINITION", f"P{self.k} survived {self.survival} counter-examples in a row")
+        else:
+            self.transition("COUNTEREXAMPLE", "attack again")
+
+    def on_refine(self):
         proposal = ask_json(
             self.llm, INTERLOCUTOR_PROMPT,
             f"Dialogue so far:\n{self.dialogue_so_far()}\n\n"
-            f"Your definition \"{self.current}\" has just been shown to fail.\n"
+            f"Your definition \"{self.current}\" has just been shown to fail: "
+            f"{self.last_verdict.get('reason', '')}\n"
             "Either propose an improved definition that avoids the problem, or admit you cannot.\n"
             'Reply as {"gives_up": true|false, "definition": "<new definition or empty>"}',
             "interlocutor.refine",
         )
+        self.round += 1
+        self.survival = 0
+        self.attempts = 0
         if proposal.get("gives_up") or not proposal.get("definition", "").strip():
+            self.candidate = None
             self.say("Euthyphro", "I cannot offer a better definition.")
+        else:
+            self.candidate = proposal["definition"].strip()
+            self.say("Euthyphro", f"Then let me say this: {self.candidate}")
+        self.transition("TERMINATION_CHECK", f"round {self.round}")
+
+    def on_termination_check(self):
+        if self.candidate is None:
             self.outcome = "APORIA"
-            self.transition("TERMINATION", "interlocutor gave up")
+            self.transition("APORIA", "interlocutor conceded")
             return
-        candidate = proposal["definition"].strip()
+        if self.round >= self.max_rounds:
+            self.outcome = "APORIA"
+            self.transition("APORIA", f"round limit {self.max_rounds} reached")
+            return
         previous = "\n".join(f"P{i}: {d}" for i, d in enumerate(self.definitions))
         circular = ask_json(
             self.llm, JUDGE_PROMPT,
-            f"Earlier definitions:\n{previous}\n\nNew definition: {candidate}\n\n"
+            f"Earlier definitions:\n{previous}\n\nNew definition: {self.candidate}\n\n"
             "Is the new definition only a restatement of an earlier, already refuted one? "
             'Reply as {"circular": true|false, "reason": "<one sentence>"}',
             "judge.circular",
         )
-        self.say("Euthyphro", f"Then let me say this: {candidate}")
         if circular.get("circular"):
             self.outcome = "APORIA"
-            self.transition("TERMINATION", f"circular refinement: {circular.get('reason', '')}")
+            self.transition("APORIA", f"circular refinement: {circular.get('reason', '')}")
             return
-        self.definitions.append(candidate)
-        self.log(f"  P{self.k} = \"{candidate}\"")
+        self.definitions.append(self.candidate)
+        self.log(f"  P{self.k} = \"{self.candidate}\"")
         self.transition("PROBE", f"refined to P{self.k}")
 
     def run(self) -> dict:
         self.log.header(f"PROTOCOL 1: SOCRATIC ELENCHUS   (provider: {self.llm.name})")
         try:
-            while self.state != "TERMINATION":
+            while self.state not in self.TERMINAL:
                 self.step()
         except DialogueError as e:
             if e.code != -32003:
                 raise
             self.outcome = "APORIA"
             self.log(f"  [error] {json.dumps(e.as_jsonrpc())}")
-            self.transition("TERMINATION", "turn limit")
+            self.transition("APORIA", "turn limit")
         summary = self.llm.complete(
             AURA_SOCRATIC_PROMPT,
             f"Dialogue:\n{self.dialogue_so_far()}\n\nThe elenchus has ended in {self.outcome}. "
-            "In under 100 words, summarise what the examination showed. Do not invent a definition "
-            "that was not reached.",
+            "In under 100 words, summarise what the examination showed. If it ended in APORIA, list the "
+            "definitions that were ruled out and why. Do not invent a definition that was not reached.",
             "aura.summary",
         )
         self.say("AURA (summary)", summary)
         result = {
             "outcome": self.outcome,
-            "probes": self.turn,
-            "definitions": {f"P{i}": d for i, d in enumerate(self.definitions)},
+            "final_claim": self.current if self.outcome == "DEFINITION" else None,
+            "rounds": self.round,
+            "aura_turns": self.turn,
+            "chain": {f"P{i}": d for i, d in enumerate(self.definitions)},
         }
         self.log("  [result] " + json.dumps(result, ensure_ascii=False))
         return result
@@ -566,7 +611,7 @@ def main(argv=None) -> int:
     parser.add_argument("--mode", choices=["both", "socratic", "galilean"], default="both")
     parser.add_argument("--claim", default=DEFAULT_CLAIM)
     parser.add_argument("--topic", default=DEFAULT_TOPIC)
-    parser.add_argument("--max-refinements", type=int, default=4)
+    parser.add_argument("--max-rounds", "--max-refinements", dest="max_rounds", type=int, default=4)
     parser.add_argument("--rounds", type=int, default=2)
     parser.add_argument("--baseline", action="store_true", help="also run a single-agent sycophancy baseline")
     parser.add_argument("--transcript", help="write the full console log to this file")
@@ -586,7 +631,7 @@ def main(argv=None) -> int:
     results = {}
     try:
         if args.mode in ("both", "socratic"):
-            results["socratic"] = SocraticStateEngine(llm, log, args.claim, args.max_refinements).run()
+            results["socratic"] = SocraticStateEngine(llm, log, args.claim, args.max_rounds).run()
         if args.mode in ("both", "galilean"):
             if args.baseline:
                 results["baseline"] = single_agent_baseline(llm, log, args.topic)
@@ -601,7 +646,7 @@ def main(argv=None) -> int:
 
     log.header("RUN COMPLETE")
     if "socratic" in results:
-        log(f"  Socratic outcome: {results['socratic']['outcome']} after {results['socratic']['probes']} probes")
+        log(f"  Socratic outcome: {results['socratic']['outcome']} after {results['socratic']['rounds']} rounds")
     if "galilean" in results:
         log(f"  Galilean debate:  {results['galilean']['turns']} turns over {results['galilean']['rounds']} rounds")
     return 0
