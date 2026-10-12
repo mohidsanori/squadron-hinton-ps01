@@ -19,7 +19,7 @@ Members: Mohid, Shayan, Sharjeel, Ahmed.
 | data | Knowledge & Memory Archivist | Shayan | [`01_Alignment_Brief.md`](01_Alignment_Brief.md) |
 | protocol | Protocol & Interface Specialist | Sharjeel | [`02_Socratic_Protocol_Map.md`](02_Socratic_Protocol_Map.md) |
 | security | Security & Ethical Navigator | Ahmed | [`03_Galilean_Sandbox.md`](03_Galilean_Sandbox.md) |
-| architect | Core & Lead Architect | Mohid | [`04_dialogic_engine.py`](04_dialogic_engine.py), [`05_Execution_Transcript.txt`](05_Execution_Transcript.txt) |
+| architect | Core & Lead Architect | Mohid | [`04_dialogic_engine_starter.py`](04_dialogic_engine_starter.py), [`05_Execution_Transcript.txt`](05_Execution_Transcript.txt) |
 
 ## Repository layout
 
@@ -29,7 +29,7 @@ squadron-hinton-ps01/
 ├── 01_Alignment_Brief.md         Knowledge Archivist
 ├── 02_Socratic_Protocol_Map.md   Protocol Specialist
 ├── 03_Galilean_Sandbox.md        Ethical Navigator
-├── 04_dialogic_engine.py         Lead Architect
+├── 04_dialogic_engine_starter.py Lead Architect
 ├── 05_Execution_Transcript.txt   output of a live run
 ├── requirements.txt
 └── .env.example                  API key names (copy to .env)
@@ -41,7 +41,7 @@ squadron-hinton-ps01/
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env              # add the key for your provider
-python 04_dialogic_engine.py
+python 04_dialogic_engine_starter.py
 ```
 
 The engine picks the first provider whose key is set (Claude, then OpenAI, then Gemini). Options:
@@ -64,7 +64,7 @@ Model overrides: `CLAUDE_MODEL` (default `claude-opus-5-5`), `CLAUDE_EFFORT` (`m
 The submitted transcript comes from:
 
 ```bash
-python 04_dialogic_engine.py --provider claude-code --baseline --transcript 05_Execution_Transcript.txt
+python 04_dialogic_engine_starter.py --provider claude-code --baseline --transcript 05_Execution_Transcript.txt
 ```
 
 ## Station sign-offs

@@ -29,7 +29,7 @@ The question is phrased as yes or no on purpose, so it reads naturally both in t
 
 ## 2. Personas
 
-Persona prompts are used by `04_dialogic_engine.py`.
+Persona prompts are used by `04_dialogic_engine_starter.py`.
 
 ### Salviati — Advocate
 ```text

@@ -11,10 +11,10 @@ Two dialogue protocols for AURA, run against a live LLM:
    argue an AI-ethics question; Sagredo delivers the synthesis.
 
 Usage:
-    python 04_dialogic_engine.py                         # both protocols, auto-detect provider
-    python 04_dialogic_engine.py --provider mock         # offline, no API key
-    python 04_dialogic_engine.py --mode socratic --claim "..."
-    python 04_dialogic_engine.py --transcript 05_Execution_Transcript.txt
+    python 04_dialogic_engine_starter.py                         # both protocols, auto-detect provider
+    python 04_dialogic_engine_starter.py --provider mock         # offline, no API key
+    python 04_dialogic_engine_starter.py --mode socratic --claim "..."
+    python 04_dialogic_engine_starter.py --transcript 05_Execution_Transcript.txt
 """
 
 import argparse
