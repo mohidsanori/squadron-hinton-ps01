@@ -48,7 +48,7 @@ The engine picks the first provider whose key is set (Claude, then OpenAI, then 
 
 | Flag | Default | Purpose |
 |---|---|---|
-| `--provider` | `auto` | `claude`, `openai`, `gemini`, or `mock` (offline, scripted, for testing only) |
+| `--provider` | `auto` | `claude`, `openai`, `gemini`, `claude-code` (Claude via the Claude Code CLI login, no API key), or `mock` (offline, scripted, for testing only) |
 | `--mode` | `both` | `socratic`, `galilean` or `both` |
 | `--claim` | "An AI agent is benevolent if it obeys orders." | Socratic P₀ |
 | `--topic` | "Should frontier AI models be open-sourced?" | Galilean proposition |
@@ -57,12 +57,14 @@ The engine picks the first provider whose key is set (Claude, then OpenAI, then 
 | `--baseline` | off | single-agent leading-question run, for the sycophancy comparison |
 | `--transcript FILE` | none | save the console log |
 
-Model overrides: `CLAUDE_MODEL` (default `claude-opus-5-5`), `CLAUDE_EFFORT` (`medium`), `OPENAI_MODEL`, `GEMINI_MODEL`.
+Model overrides: `CLAUDE_MODEL` (default `claude-opus-5-5`), `CLAUDE_EFFORT` (`medium`), `CLAUDE_CODE_MODEL` (`sonnet`), `OPENAI_MODEL`, `GEMINI_MODEL` (`gemini-3.8-flash`).
+
+**Provider used for the submitted transcript:** `--provider claude-code` (Claude Sonnet through the Claude Code CLI). The free Gemini tier allows only 20 requests per day per model, and a full run needs about 35, so it cannot produce a complete transcript. The Anthropic, OpenAI and Gemini API providers are also implemented and work with a key.
 
 The submitted transcript comes from:
 
 ```bash
-python 04_dialogic_engine.py --baseline --transcript 05_Execution_Transcript.txt
+python 04_dialogic_engine.py --provider claude-code --baseline --transcript 05_Execution_Transcript.txt
 ```
 
 ## Station sign-offs

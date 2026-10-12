@@ -22,8 +22,11 @@ import datetime
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import textwrap
+import time
 
 try:
     from dotenv import load_dotenv
@@ -164,21 +167,52 @@ class GeminiLLM:
 
     def __init__(self):
         from google import genai
-        from google.genai import types
+        from google.genai import errors, types
+        self.errors = errors
         self.types = types
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        self.model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
     def complete(self, system: str, user: str, label: str) -> str:
+        # Free-tier Gemini often returns 429 (rate limit) or 503 (overloaded); back off and retry.
+        for attempt in range(5):
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=user,
+                    config=self.types.GenerateContentConfig(system_instruction=system),
+                )
+                return (response.text or "").strip()
+            except self.errors.APIError as e:
+                daily_quota = "PerDay" in str(e)
+                if e.code not in (429, 500, 503) or daily_quota or attempt == 4:
+                    raise DialogueError(-32001, f"{label}: {e}") from e
+                time.sleep(2 ** attempt * 5)
+            except Exception as e:
+                raise DialogueError(-32001, f"{label}: {e}") from e
+
+
+class ClaudeCodeLLM:
+    """Calls Claude through the Claude Code CLI (`claude -p`), using its login
+    (e.g. a Claude Pro plan) instead of an API key."""
+
+    name = "claude-code"
+
+    def __init__(self):
+        if not shutil.which("claude"):
+            raise DialogueError(-32005, "claude CLI not found; install Claude Code and log in")
+        self.model = os.getenv("CLAUDE_CODE_MODEL", "sonnet")
+
+    def complete(self, system: str, user: str, label: str) -> str:
+        cmd = ["claude", "-p", "--system-prompt", system, "--tools", "", "--model", self.model,
+               "--no-session-persistence", "--strict-mcp-config", "--setting-sources", ""]
         try:
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=user,
-                config=self.types.GenerateContentConfig(system_instruction=system),
-            )
-        except Exception as e:
-            raise DialogueError(-32001, f"{label}: {e}") from e
-        return (response.text or "").strip()
+            result = subprocess.run(cmd, input=user, capture_output=True, text=True, timeout=300)
+        except subprocess.TimeoutExpired as e:
+            raise DialogueError(-32001, f"{label}: timed out") from e
+        if result.returncode != 0:
+            raise DialogueError(-32001, f"{label}: {(result.stderr or result.stdout).strip()[:300]}")
+        return result.stdout.strip()
 
 
 class MockLLM:
@@ -232,7 +266,7 @@ class MockLLM:
         return f"[{speaker}, mock turn {n}] (offline placeholder text for '{label}')"
 
 
-PROVIDERS = {"claude": ClaudeLLM, "openai": OpenAILLM, "gemini": GeminiLLM, "mock": MockLLM}
+PROVIDERS = {"claude": ClaudeLLM, "claude-code": ClaudeCodeLLM, "openai": OpenAILLM, "gemini": GeminiLLM, "mock": MockLLM}
 PROVIDER_KEYS = [("claude", "ANTHROPIC_API_KEY"), ("openai", "OPENAI_API_KEY"), ("gemini", "GEMINI_API_KEY")]
 
 
