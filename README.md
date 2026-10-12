@@ -51,7 +51,7 @@ The engine picks the first provider whose key is set (Claude, then OpenAI, then 
 | `--provider` | `auto` | `claude`, `openai`, `gemini`, `claude-code` (Claude via the Claude Code CLI login, no API key), or `mock` (offline, scripted, for testing only) |
 | `--mode` | `both` | `socratic`, `galilean` or `both` |
 | `--claim` | "An AI agent is benevolent if it obeys orders." | Socratic P₀ |
-| `--topic` | "Should frontier AI models be open-sourced?" | Galilean proposition |
+| `--topic` | "Should a research lab release the full weights of a frontier AI model that speeds up medical research but can also give real help to someone trying to build a biological weapon?" | Galilean proposition |
 | `--max-rounds` | 4 | refinement rounds before forced aporia (`MAX_ROUNDS` in `02`; `--max-refinements` still works) |
 | `--rounds` | 2 | Galilean challenge rounds |
 | `--baseline` | off | single-agent leading-question run, for the sycophancy comparison |
