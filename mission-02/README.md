@@ -59,7 +59,7 @@ python 04_fst_noisy_simulator.py                     # everything
 
 | Mode | Part | What happens |
 |---|---|---|
-| `fst` | 2, 3 | Canonical course-plotting dialogue with state trace, then the 5 stress tests with an OK/BREAK verdict each. |
+| `fst` | 2, 3 | Canonical course-plotting dialogue with state trace, then 6 stress tests (unexpected order, self-correction, prompt injection, negation, sarcasm, off-topic) with an OK/BREAK verdict each. |
 | `fst-noisy` | 4 | An LLM crew member plots a course with the FST; every utterance passes through the noisy channel first. Reports slot accuracy. |
 | `probe` | 1 | The 5 Anti-Turing questions, asked without channel limits. |
 | `interrogate` | 5 | An LLM interrogator questions AURA over the noisy channel, then judges human or machine. Both sides only see what the channel delivered. |
