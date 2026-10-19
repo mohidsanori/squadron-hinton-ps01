@@ -22,6 +22,23 @@ Run with `python 04_fst_noisy_simulator.py --mode fst`. The tests are `STRESS_TE
 
 <!-- Root cause per failure: first-match extraction, keyword yes/no, no notion of negation or irony... -->
 
+## 1b. Portal FST simulator (course website)
+
+Part 5 asks us to stress-test the FST in the portal's simulator too. Its parser uses substring checks (read from the site code), so these inputs should break it. Run each one, screenshot or copy the result, and fill in the table.
+
+| # | State | Input | Expected break |
+|---|---|---|---|
+| 1 | INIT | `this ship needs a course` | "hi" inside "this"/"ship" is taken as a greeting |
+| 2 | GREETING | `Sirius please` | slot is filled as "Alpha Centauri", not Sirius |
+| 3 | GREETING | `check the console first` | "sol" inside "console" sets sector = Sol System |
+| 4 | COLLECT_SLOTS | `warp 99` | any integer accepted, no 1–9 range check |
+| 5 | CONFIRMATION | `I do not confirm` | "confirm" substring locks the course |
+| 6 | any | an off-topic line | goes to FAILURE with no recovery (no FALLBACK state) |
+
+| # | Actual result | Broke? |
+|---|---|---|
+| | | |
+
 ## 2. Shannon entropy and semantic loss
 
 <!-- Use the metrics the simulator prints: H(sent), H(received), symbol error rate p, q-ary capacity C = log2 q − H_b(p) − p·log2(q−1), content-word retention.
