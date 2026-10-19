@@ -17,7 +17,7 @@ Plasma noise from Sirius B corrupts AURA's subspace transceiver, and Command sus
 | data | Data & Payload Specialist | Shayan | [`01_Lovelace_Inquiry_Brief.md`](01_Lovelace_Inquiry_Brief.md) |
 | protocol | Communications & Protocol Officer | Sharjeel | [`02_FST_and_Noisy_Protocol.md`](02_FST_and_Noisy_Protocol.md) |
 | security | Security & Ethics Sentinel | Ahmed | [`03_Entropy_Hazard_Audit.md`](03_Entropy_Hazard_Audit.md) |
-| architect | Systems Architect | Mohid | [`04_fst_noisy_simulator.py`](04_fst_noisy_simulator.py), [`05_Noisy_Interrogation_Transcript.md`](05_Noisy_Interrogation_Transcript.md) |
+| architect | Systems Architect | Mohid | [`04_fst_noisy_simulator.py`](04_fst_noisy_simulator.py), [`ps02_solution.ipynb`](ps02_solution.ipynb), [`05_Noisy_Interrogation_Transcript.md`](05_Noisy_Interrogation_Transcript.md) |
 
 ## Folder layout
 
@@ -29,6 +29,7 @@ mission-02/
 ├── 03_Entropy_Hazard_Audit.md         Security Sentinel
 ├── 04_fst_noisy_simulator.py          Systems Architect (simulator)
 ├── 04_fst_noisy_simulator_starter.py  same simulator, under the instructor README's file name
+├── ps02_solution.ipynb                notebook version: FST, stress tests, channel sweep, recorded interrogation
 └── 05_Noisy_Interrogation_Transcript.md   10-turn noisy interrogation (full squad)
 ```
 
@@ -43,6 +44,8 @@ cd mission-02
 python 04_fst_noisy_simulator.py --mode fst          # FST + stress tests, no LLM needed
 python 04_fst_noisy_simulator.py                     # everything
 ```
+
+Or open `ps02_solution.ipynb` in VS Code: it imports the same classes, runs offline, and has an optional live-LLM cell (set `PROVIDER`).
 
 | Flag | Default | Purpose |
 |---|---|---|

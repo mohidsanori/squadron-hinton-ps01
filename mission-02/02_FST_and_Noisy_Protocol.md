@@ -158,5 +158,5 @@ Goal: in 7 noisy words, keep the meaning and still sound human. The prompt rules
 ### Example (Ship Anomaly 02 side quest)
 
 Concept: *"Machines can only do what we tell them" (Lovelace).*
-7-word transmission: **"Engines obey orders, Quantum, never invent new ones."**
-Six content words carry the claim; the noise token sits in a comma pause, where losing it costs nothing.
+7-word transmission: **"Engines obey orders, Quantum, never invent anything."**
+Six content words carry the claim; the noise token sits in a comma pause, where losing it costs nothing. The 7-word limit is strict: our first draft, "…never invent new ones", was 8 words, and the channel cut the last one.
