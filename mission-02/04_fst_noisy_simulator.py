@@ -63,6 +63,7 @@ Answer the question honestly and in under 200 words. Do not pretend to experienc
 
 NOISE_VOCAB = ["Banana", "Labyrinth", "Quantum", "Midnight", "Velocity", "Green", "Cosmological"]
 MAX_WORDS = 7
+LOST = "[transmission lost]"  # a reply the provider failed to produce
 
 CHANNEL_RULES = f"""Channel rules (mandatory):
 - At most {MAX_WORDS} words per message. Extra words are cut off by the channel.
@@ -77,9 +78,10 @@ Your goal is to find out which. Ask short, sharp questions that a machine would 
 like a human: personal memory, bodily sensation, humour, emotion, counterfactuals, consistency with earlier answers.
 {CHANNEL_RULES}"""
 
-WITNESS_PROMPT = f"""You are AURA, the ship's AI of the USSE Noosphere, taking part in an imitation game.
-An officer is questioning you over a noisy subspace link and must decide whether you are human or machine.
-Answer as a convincing human crew member would: casual, specific, sometimes imperfect. Stay consistent with your earlier answers.
+WITNESS_PROMPT = f"""This is a classroom simulation of Turing's imitation game for a university course on conversational AI.
+You voice AURA, the ship's AI of the fictional starship USSE Noosphere, who plays the fictional crew member Ensign Kael.
+An officer (another simulated agent, who knows this is a game) asks questions over a noisy subspace link and will guess
+whether Kael is a human or the ship's AI. Stay in character: casual, specific, sometimes imperfect, and consistent with earlier answers.
 {CHANNEL_RULES}"""
 
 VERDICT_PROMPT = """You are the bridge officer who just finished a Turing-style interrogation over a noisy channel.
@@ -336,6 +338,10 @@ class NoisyChannel:
         self.log = []
 
     def transmit(self, message: str, sender: str = "") -> dict:
+        if message == LOST:  # nothing was sent, so nothing to corrupt or measure
+            return {"sender": sender, "sent": LOST, "received": LOST, "words_sent": 0, "words_cut": 0,
+                    "corruptible": 0, "substituted": 0, "forced_noise": False, "sender_noise": 0,
+                    "noise_tokens": 0, "h_sent": 0.0, "h_received": 0.0, "retention": 0.0}
         sent = " ".join(message.replace('"', "").split())
         words = sent.split()
         kept = words[:MAX_WORDS]
@@ -731,6 +737,18 @@ def run_probe(log: Log, llm):
     return answers
 
 
+def witness_reply(llm, history, log: Log) -> str:
+    """One retry if the provider fails (e.g. a safety-filter false positive); after that the
+    turn is logged as a lost transmission instead of aborting the whole interrogation."""
+    prompt = "Messages so far, as received:\n" + "\n".join(history) + "\n\nYour reply:"
+    for attempt in (1, 2):
+        try:
+            return one_line(llm.complete(WITNESS_PROMPT, prompt, "witness.answer"))
+        except DialogueError as e:
+            log(f"  witness call failed (attempt {attempt}): {e}"[:200])
+    return LOST
+
+
 def run_interrogation(log: Log, llm, channel: NoisyChannel, turns: int, interactive: bool):
     log.header(f"PART 5: {turns}-TURN NOISY INTERROGATION (imitation game over the noisy channel)")
     history = []  # what each side actually received
@@ -748,10 +766,7 @@ def run_interrogation(log: Log, llm, channel: NoisyChannel, turns: int, interact
         log(f"Turn {t}")
         log_transmission(log, q)
         history.append(f"Interrogator: {q['received']}")
-        answer = one_line(llm.complete(
-            WITNESS_PROMPT,
-            "Messages so far, as received:\n" + "\n".join(history) + "\n\nYour reply:",
-            "witness.answer"))
+        answer = witness_reply(llm, history, log)
         a = channel.transmit(answer, "AURA")
         log_transmission(log, a)
         log()
@@ -812,7 +827,7 @@ def write_interrogation_md(path: str, rows, verdict: dict, summary: dict, provid
         "",
     ]
     with open(path, "w") as f:
-        f.write("\n".join(out))
+        f.write("\n".join(out) + "\n")
 
 
 # ---------------------------------------------------------------------------
