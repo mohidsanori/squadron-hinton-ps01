@@ -9,6 +9,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 |---|---|---|---|---|
 | **Mission 01** | *Alpha Centauri* | Socratic Elenchus & Galilean 3-Persona Debate | [`mission-01/`](./mission-01/) | 2026-10-18 |
 | **Mission 02** | *Sirius Binary System* | FST Dialogue Systems, Lovelace's Objection & Shannon Noisy Channel | [`mission-02/`](./mission-02/) | 2026-10-25 |
+| **Mission 03** | *Pleiades Open Cluster* | Multi-Head Attention, RoPE & Grouped-Query KV-Cache | [`mission-03/`](./mission-03/) | 2026-11-01 |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
