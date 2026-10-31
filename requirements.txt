@@ -7,3 +7,6 @@ torch>=2.4
 numpy>=1.26
 matplotlib>=3.8
 ipykernel>=6.0
+# Mission 04 (Part 4 downloads Qwen/Qwen2.5-0.5B-Instruct, ~1 GB, on first run)
+transformers>=4.45
+nbformat>=5.9
