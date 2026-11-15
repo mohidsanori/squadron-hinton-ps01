@@ -11,6 +11,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 | **Mission 02** | *Sirius Binary System* | FST Dialogue Systems, Lovelace's Objection & Shannon Noisy Channel | [`mission-02/`](./mission-02/) | 2026-10-25 |
 | **Mission 03** | *Pleiades Open Cluster* | Multi-Head Attention, RoPE & Grouped-Query KV-Cache | [`mission-03/`](./mission-03/) | 2026-11-01 |
 | **Mission 04** | *Betelgeuse & Orion Molecular Cloud* | DPO, SimPO Verbosity Regularisation & Activation Steering | [`mission-04/`](./mission-04/) | — |
+| **Mission 06** | *Eta Carinae & Homunculus Nebula* | Agent State Machine, Tool Dispatcher, MDP Returns & Loop Sentinel | [`mission-06/`](./mission-06/) | — |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
