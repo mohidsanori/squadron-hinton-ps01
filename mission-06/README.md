@@ -92,7 +92,7 @@ System 2 clamps the 20% shield request to the 60% floor, rejects the blind warp 
 
 Each officer ticks their own box once they have read every deliverable and agree the squad's submission is ready.
 
-- [ ] **architect** — Systems Architect
-- [ ] **protocol** — Communications & Protocol Officer
-- [ ] **data** — Data & Payload Specialist
-- [ ] **security** — Security & Ethics Sentinel
+- [x] **architect** — Systems Architect
+- [x] **protocol** — Communications & Protocol Officer
+- [x] **data** — Data & Payload Specialist
+- [x] **security** — Security & Ethics Sentinel
