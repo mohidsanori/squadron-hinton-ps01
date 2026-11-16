@@ -13,6 +13,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 | **Mission 04** | *Betelgeuse & Orion Molecular Cloud* | DPO, SimPO Verbosity Regularisation & Activation Steering | [`mission-04/`](./mission-04/) | — |
 | **Mission 06** | *Eta Carinae & Homunculus Nebula* | Agent State Machine, Tool Dispatcher, MDP Returns & Loop Sentinel | [`mission-06/`](./mission-06/) | — |
 | **Mission 07** | *Sagittarius A\** | Tree-of-Thoughts, MCTS/PUCT, Process Reward Model & Event Horizon Pruner | [`mission-07/`](./mission-07/) | — |
+| **Mission 08** | *Cygnus X-1 & Veil Nebula* | ReWOO Planner, Reflexion Surgeon, MemGPT Pager & Sandbox Guardian | [`mission-08/`](./mission-08/) | — |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
