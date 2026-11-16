@@ -14,6 +14,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 | **Mission 06** | *Eta Carinae & Homunculus Nebula* | Agent State Machine, Tool Dispatcher, MDP Returns & Loop Sentinel | [`mission-06/`](./mission-06/) | — |
 | **Mission 07** | *Sagittarius A\** | Tree-of-Thoughts, MCTS/PUCT, Process Reward Model & Event Horizon Pruner | [`mission-07/`](./mission-07/) | — |
 | **Mission 08** | *Cygnus X-1 & Veil Nebula* | ReWOO Planner, Reflexion Surgeon, MemGPT Pager & Sandbox Guardian | [`mission-08/`](./mission-08/) | — |
+| **Mission 09** | *Tarantula Nebula (LMC)* | Adaptive RAG Router, CRAG / Self-RAG, bfloat16 ColBERT Indexer & Route-Hijack Sentinel | [`mission-09/`](./mission-09/) | — |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
