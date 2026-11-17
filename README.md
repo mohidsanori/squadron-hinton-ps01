@@ -15,6 +15,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 | **Mission 07** | *Sagittarius A\** | Tree-of-Thoughts, MCTS/PUCT, Process Reward Model & Event Horizon Pruner | [`mission-07/`](./mission-07/) | — |
 | **Mission 08** | *Cygnus X-1 & Veil Nebula* | ReWOO Planner, Reflexion Surgeon, MemGPT Pager & Sandbox Guardian | [`mission-08/`](./mission-08/) | — |
 | **Mission 09** | *Tarantula Nebula (LMC)* | Adaptive RAG Router, CRAG / Self-RAG, bfloat16 ColBERT Indexer & Route-Hijack Sentinel | [`mission-09/`](./mission-09/) | — |
+| **Mission 10** | *Boötes Deep Void* | OpenTelemetry Tracer, Dual-LLM / CaMeL Defence, Semantic Entropy & Red-Team RBAC Sentinel | [`mission-10/`](./mission-10/) | — |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
