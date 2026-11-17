@@ -16,6 +16,7 @@ Our solutions, one folder per mission, matching the instructor repo's layout.
 | **Mission 08** | *Cygnus X-1 & Veil Nebula* | ReWOO Planner, Reflexion Surgeon, MemGPT Pager & Sandbox Guardian | [`mission-08/`](./mission-08/) | — |
 | **Mission 09** | *Tarantula Nebula (LMC)* | Adaptive RAG Router, CRAG / Self-RAG, bfloat16 ColBERT Indexer & Route-Hijack Sentinel | [`mission-09/`](./mission-09/) | — |
 | **Mission 10** | *Boötes Deep Void* | OpenTelemetry Tracer, Dual-LLM / CaMeL Defence, Semantic Entropy & Red-Team RBAC Sentinel | [`mission-10/`](./mission-10/) | — |
+| **Mission 11** | *Andromeda Galaxy Core* | State Graph, Handoff Contracts, Blackboard & Debate Consensus, Deadlock / Byzantine Sentinel | [`mission-11/`](./mission-11/) | 2027-01-10 |
 
 Each mission folder has its own README with the roster, deliverables, run instructions and station sign-offs.
 
